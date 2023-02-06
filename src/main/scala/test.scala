@@ -15,6 +15,7 @@ import scala.scalanative.unsafe.*
     if (
       mu_begin_window_ex(ctx, c"My Window", mu_rect(10, 10, 300, 400), 0) != 0
     ) {
+      Thread.sleep(5000)
       mu_end_window(ctx);
     }
   }

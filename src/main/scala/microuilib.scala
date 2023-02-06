@@ -1,11 +1,15 @@
 package microuilib
 
-import scala.scalanative.unsafe.*
-import scala.scalanative.unsigned.*
-import scalanative.libc.*
-import scalanative.*
+import _root_.scala.scalanative.unsafe.*
+import _root_.scala.scalanative.unsigned.*
+import _root_.scala.scalanative.libc.*
+import _root_.scala.scalanative.*
 
-object types:
+object aliases:
+  import _root_.microuilib.aliases.*
+  import _root_.microuilib.structs.*
+  import _root_.microuilib.unions.*
+
   opaque type mu_Font = Ptr[Byte]
   object mu_Font: 
     given _tag: Tag[mu_Font] = Tag.Ptr(Tag.Byte)
@@ -26,6 +30,12 @@ object types:
     inline def apply(inline o: Float): mu_Real = o
     extension (v: mu_Real)
       inline def value: Float = v
+
+object structs:
+  import _root_.microuilib.aliases.*
+  import _root_.microuilib.structs.*
+  import _root_.microuilib.unions.*
+
   opaque type mu_BaseCommand = CStruct2[CInt, CInt]
   object mu_BaseCommand:
     given _tag: Tag[mu_BaseCommand] = Tag.materializeCStruct2Tag[CInt, CInt]
@@ -514,6 +524,12 @@ object types:
       def x_=(value: CInt): Unit = !struct.at1 = value
       def y : CInt = struct._2
       def y_=(value: CInt): Unit = !struct.at2 = value
+
+object unions:
+  import _root_.microuilib.aliases.*
+  import _root_.microuilib.structs.*
+  import _root_.microuilib.unions.*
+
   opaque type mu_Command = CArray[Byte, Nat.Digit2[Nat._3, Nat._2]]
   object mu_Command:
     given _tag: Tag[mu_Command] = Tag.CArray[CChar, Nat.Digit2[Nat._3, Nat._2]](Tag.Byte, Tag.Digit2[Nat._3, Nat._2](Tag.Nat3, Tag.Nat2))
@@ -578,9 +594,13 @@ object types:
       def icon : mu_IconCommand = !struct.at(0).asInstanceOf[Ptr[mu_IconCommand]]
       def icon_=(value: mu_IconCommand): Unit = !struct.at(0).asInstanceOf[Ptr[mu_IconCommand]] = value
 
+
 @extern
 private[microuilib] object extern_functions:
-  import types.*
+  import _root_.microuilib.aliases.*
+  import _root_.microuilib.structs.*
+  import _root_.microuilib.unions.*
+
   private[microuilib] def __sn_wrap_microuilib_mu_begin_window_ex(ctx : Ptr[mu_Context], title : CString, rect : Ptr[mu_Rect], opt : CInt): CInt = extern
 
   private[microuilib] def __sn_wrap_microuilib_mu_check_clip(ctx : Ptr[mu_Context], r : Ptr[mu_Rect]): CInt = extern
@@ -707,33 +727,41 @@ private[microuilib] object extern_functions:
 
   def mu_textbox_ex(ctx : Ptr[mu_Context], buf : CString, bufsz : CInt, opt : CInt): CInt = extern
 
+
 object functions:
-  import types.*
+  import _root_.microuilib.aliases.*
+  import _root_.microuilib.structs.*
+  import _root_.microuilib.unions.*
+
   import extern_functions.*
   export extern_functions.*
-  def mu_begin_window_ex(ctx : Ptr[mu_Context], title : CString, rect : mu_Rect, opt : CInt)(using Zone): CInt = 
-    val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
-    !(__ptr_0 + 0) = rect
-    __sn_wrap_microuilib_mu_begin_window_ex(ctx, title, (__ptr_0 + 0), opt)
 
   def mu_begin_window_ex(ctx : Ptr[mu_Context], title : CString, rect : Ptr[mu_Rect], opt : CInt): CInt = 
     __sn_wrap_microuilib_mu_begin_window_ex(ctx, title, rect, opt)
 
-  def mu_check_clip(ctx : Ptr[mu_Context], r : Ptr[mu_Rect]): CInt = 
-    __sn_wrap_microuilib_mu_check_clip(ctx, r)
+  def mu_begin_window_ex(ctx : Ptr[mu_Context], title : CString, rect : mu_Rect, opt : CInt)(using Zone): CInt = 
+    val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
+    !(__ptr_0 + 0) = rect
+    __sn_wrap_microuilib_mu_begin_window_ex(ctx, title, (__ptr_0 + 0), opt)
 
   def mu_check_clip(ctx : Ptr[mu_Context], r : mu_Rect)(using Zone): CInt = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = r
     __sn_wrap_microuilib_mu_check_clip(ctx, (__ptr_0 + 0))
 
-  def mu_color(r : CInt, g : CInt, b : CInt, a : CInt)(__return : Ptr[mu_Color]): Unit = 
-    __sn_wrap_microuilib_mu_color(r, g, b, a, __return)
+  def mu_check_clip(ctx : Ptr[mu_Context], r : Ptr[mu_Rect]): CInt = 
+    __sn_wrap_microuilib_mu_check_clip(ctx, r)
 
   def mu_color(r : CInt, g : CInt, b : CInt, a : CInt)(using Zone): mu_Color = 
     val __ptr_0: Ptr[mu_Color] = alloc[mu_Color](1)
     __sn_wrap_microuilib_mu_color(r, g, b, a, (__ptr_0 + 0))
     !(__ptr_0 + 0)
+
+  def mu_color(r : CInt, g : CInt, b : CInt, a : CInt)(__return : Ptr[mu_Color]): Unit = 
+    __sn_wrap_microuilib_mu_color(r, g, b, a, __return)
+
+  def mu_draw_box(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect], color : Ptr[mu_Color]): Unit = 
+    __sn_wrap_microuilib_mu_draw_box(ctx, rect, color)
 
   def mu_draw_box(ctx : Ptr[mu_Context], rect : mu_Rect, color : mu_Color)(using Zone): Unit = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
@@ -741,9 +769,6 @@ object functions:
     !(__ptr_0 + 0) = rect
     !(__ptr_1 + 0) = color
     __sn_wrap_microuilib_mu_draw_box(ctx, (__ptr_0 + 0), (__ptr_1 + 0))
-
-  def mu_draw_box(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect], color : Ptr[mu_Color]): Unit = 
-    __sn_wrap_microuilib_mu_draw_box(ctx, rect, color)
 
   def mu_draw_control_frame(ctx : Ptr[mu_Context], id : mu_Id, rect : Ptr[mu_Rect], colorid : CInt, opt : CInt): Unit = 
     __sn_wrap_microuilib_mu_draw_control_frame(ctx, id, rect, colorid, opt)
@@ -791,13 +816,13 @@ object functions:
     !(__ptr_1 + 0) = color
     __sn_wrap_microuilib_mu_draw_text(ctx, font, str, len, (__ptr_0 + 0), (__ptr_1 + 0))
 
+  def mu_get_clip_rect(ctx : Ptr[mu_Context])(__return : Ptr[mu_Rect]): Unit = 
+    __sn_wrap_microuilib_mu_get_clip_rect(ctx, __return)
+
   def mu_get_clip_rect(ctx : Ptr[mu_Context])(using Zone): mu_Rect = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     __sn_wrap_microuilib_mu_get_clip_rect(ctx, (__ptr_0 + 0))
     !(__ptr_0 + 0)
-
-  def mu_get_clip_rect(ctx : Ptr[mu_Context])(__return : Ptr[mu_Rect]): Unit = 
-    __sn_wrap_microuilib_mu_get_clip_rect(ctx, __return)
 
   def mu_layout_next(ctx : Ptr[mu_Context])(__return : Ptr[mu_Rect]): Unit = 
     __sn_wrap_microuilib_mu_layout_next(ctx, __return)
@@ -807,61 +832,61 @@ object functions:
     __sn_wrap_microuilib_mu_layout_next(ctx, (__ptr_0 + 0))
     !(__ptr_0 + 0)
 
-  def mu_layout_set_next(ctx : Ptr[mu_Context], r : Ptr[mu_Rect], relative : CInt): Unit = 
-    __sn_wrap_microuilib_mu_layout_set_next(ctx, r, relative)
-
   def mu_layout_set_next(ctx : Ptr[mu_Context], r : mu_Rect, relative : CInt)(using Zone): Unit = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = r
     __sn_wrap_microuilib_mu_layout_set_next(ctx, (__ptr_0 + 0), relative)
 
-  def mu_mouse_over(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): CInt = 
-    __sn_wrap_microuilib_mu_mouse_over(ctx, rect)
+  def mu_layout_set_next(ctx : Ptr[mu_Context], r : Ptr[mu_Rect], relative : CInt): Unit = 
+    __sn_wrap_microuilib_mu_layout_set_next(ctx, r, relative)
 
   def mu_mouse_over(ctx : Ptr[mu_Context], rect : mu_Rect)(using Zone): CInt = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = rect
     __sn_wrap_microuilib_mu_mouse_over(ctx, (__ptr_0 + 0))
 
+  def mu_mouse_over(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): CInt = 
+    __sn_wrap_microuilib_mu_mouse_over(ctx, rect)
+
+  def mu_push_clip_rect(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): Unit = 
+    __sn_wrap_microuilib_mu_push_clip_rect(ctx, rect)
+
   def mu_push_clip_rect(ctx : Ptr[mu_Context], rect : mu_Rect)(using Zone): Unit = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = rect
     __sn_wrap_microuilib_mu_push_clip_rect(ctx, (__ptr_0 + 0))
 
-  def mu_push_clip_rect(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): Unit = 
-    __sn_wrap_microuilib_mu_push_clip_rect(ctx, rect)
+  def mu_rect(x : CInt, y : CInt, w : CInt, h : CInt)(__return : Ptr[mu_Rect]): Unit = 
+    __sn_wrap_microuilib_mu_rect(x, y, w, h, __return)
 
   def mu_rect(x : CInt, y : CInt, w : CInt, h : CInt)(using Zone): mu_Rect = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     __sn_wrap_microuilib_mu_rect(x, y, w, h, (__ptr_0 + 0))
     !(__ptr_0 + 0)
 
-  def mu_rect(x : CInt, y : CInt, w : CInt, h : CInt)(__return : Ptr[mu_Rect]): Unit = 
-    __sn_wrap_microuilib_mu_rect(x, y, w, h, __return)
-
-  def mu_set_clip(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): Unit = 
-    __sn_wrap_microuilib_mu_set_clip(ctx, rect)
-
   def mu_set_clip(ctx : Ptr[mu_Context], rect : mu_Rect)(using Zone): Unit = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = rect
     __sn_wrap_microuilib_mu_set_clip(ctx, (__ptr_0 + 0))
 
-  def mu_textbox_raw(ctx : Ptr[mu_Context], buf : CString, bufsz : CInt, id : mu_Id, r : Ptr[mu_Rect], opt : CInt): CInt = 
-    __sn_wrap_microuilib_mu_textbox_raw(ctx, buf, bufsz, id, r, opt)
+  def mu_set_clip(ctx : Ptr[mu_Context], rect : Ptr[mu_Rect]): Unit = 
+    __sn_wrap_microuilib_mu_set_clip(ctx, rect)
 
   def mu_textbox_raw(ctx : Ptr[mu_Context], buf : CString, bufsz : CInt, id : mu_Id, r : mu_Rect, opt : CInt)(using Zone): CInt = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = r
     __sn_wrap_microuilib_mu_textbox_raw(ctx, buf, bufsz, id, (__ptr_0 + 0), opt)
 
-  def mu_update_control(ctx : Ptr[mu_Context], id : mu_Id, rect : Ptr[mu_Rect], opt : CInt): Unit = 
-    __sn_wrap_microuilib_mu_update_control(ctx, id, rect, opt)
+  def mu_textbox_raw(ctx : Ptr[mu_Context], buf : CString, bufsz : CInt, id : mu_Id, r : Ptr[mu_Rect], opt : CInt): CInt = 
+    __sn_wrap_microuilib_mu_textbox_raw(ctx, buf, bufsz, id, r, opt)
 
   def mu_update_control(ctx : Ptr[mu_Context], id : mu_Id, rect : mu_Rect, opt : CInt)(using Zone): Unit = 
     val __ptr_0: Ptr[mu_Rect] = alloc[mu_Rect](1)
     !(__ptr_0 + 0) = rect
     __sn_wrap_microuilib_mu_update_control(ctx, id, (__ptr_0 + 0), opt)
+
+  def mu_update_control(ctx : Ptr[mu_Context], id : mu_Id, rect : Ptr[mu_Rect], opt : CInt): Unit = 
+    __sn_wrap_microuilib_mu_update_control(ctx, id, rect, opt)
 
   def mu_vec2(x : CInt, y : CInt)(using Zone): mu_Vec2 = 
     val __ptr_0: Ptr[mu_Vec2] = alloc[mu_Vec2](1)
@@ -870,19 +895,51 @@ object functions:
 
   def mu_vec2(x : CInt, y : CInt)(__return : Ptr[mu_Vec2]): Unit = 
     __sn_wrap_microuilib_mu_vec2(x, y, __return)
+
 object constants:
+  val MU_CLIP_PART: CUnsignedInt = 1.toUInt
+  val MU_CLIP_ALL: CUnsignedInt = 2.toUInt
+  
+  val MU_RES_ACTIVE: CUnsignedInt = 1.toUInt
+  val MU_RES_SUBMIT: CUnsignedInt = 2.toUInt
+  val MU_RES_CHANGE: CUnsignedInt = 4.toUInt
+  
+  val MU_COMMAND_JUMP: CUnsignedInt = 1.toUInt
+  val MU_COMMAND_CLIP: CUnsignedInt = 2.toUInt
+  val MU_COMMAND_RECT: CUnsignedInt = 3.toUInt
+  val MU_COMMAND_TEXT: CUnsignedInt = 4.toUInt
+  val MU_COMMAND_ICON: CUnsignedInt = 5.toUInt
+  val MU_COMMAND_MAX: CUnsignedInt = 6.toUInt
+  
+  val MU_KEY_SHIFT: CUnsignedInt = 1.toUInt
+  val MU_KEY_CTRL: CUnsignedInt = 2.toUInt
+  val MU_KEY_ALT: CUnsignedInt = 4.toUInt
+  val MU_KEY_BACKSPACE: CUnsignedInt = 8.toUInt
+  val MU_KEY_RETURN: CUnsignedInt = 16.toUInt
+  
+  val MU_MOUSE_LEFT: CUnsignedInt = 1.toUInt
+  val MU_MOUSE_RIGHT: CUnsignedInt = 2.toUInt
+  val MU_MOUSE_MIDDLE: CUnsignedInt = 4.toUInt
+  
   val MU_ICON_CLOSE: CUnsignedInt = 1.toUInt
   val MU_ICON_CHECK: CUnsignedInt = 2.toUInt
   val MU_ICON_COLLAPSED: CUnsignedInt = 3.toUInt
   val MU_ICON_EXPANDED: CUnsignedInt = 4.toUInt
   val MU_ICON_MAX: CUnsignedInt = 5.toUInt
   
-  val MU_CLIP_PART: CUnsignedInt = 1.toUInt
-  val MU_CLIP_ALL: CUnsignedInt = 2.toUInt
-  
-  val MU_MOUSE_LEFT: CUnsignedInt = 1.toUInt
-  val MU_MOUSE_RIGHT: CUnsignedInt = 2.toUInt
-  val MU_MOUSE_MIDDLE: CUnsignedInt = 4.toUInt
+  val MU_OPT_ALIGNCENTER: CUnsignedInt = 1.toUInt
+  val MU_OPT_ALIGNRIGHT: CUnsignedInt = 2.toUInt
+  val MU_OPT_NOINTERACT: CUnsignedInt = 4.toUInt
+  val MU_OPT_NOFRAME: CUnsignedInt = 8.toUInt
+  val MU_OPT_NORESIZE: CUnsignedInt = 16.toUInt
+  val MU_OPT_NOSCROLL: CUnsignedInt = 32.toUInt
+  val MU_OPT_NOCLOSE: CUnsignedInt = 64.toUInt
+  val MU_OPT_NOTITLE: CUnsignedInt = 128.toUInt
+  val MU_OPT_HOLDFOCUS: CUnsignedInt = 256.toUInt
+  val MU_OPT_AUTOSIZE: CUnsignedInt = 512.toUInt
+  val MU_OPT_POPUP: CUnsignedInt = 1024.toUInt
+  val MU_OPT_CLOSED: CUnsignedInt = 2048.toUInt
+  val MU_OPT_EXPANDED: CUnsignedInt = 4096.toUInt
   
   val MU_COLOR_TEXT: CUnsignedInt = 0.toUInt
   val MU_COLOR_BORDER: CUnsignedInt = 1.toUInt
@@ -900,34 +957,7 @@ object constants:
   val MU_COLOR_SCROLLTHUMB: CUnsignedInt = 13.toUInt
   val MU_COLOR_MAX: CUnsignedInt = 14.toUInt
   
-  val MU_RES_ACTIVE: CUnsignedInt = 1.toUInt
-  val MU_RES_SUBMIT: CUnsignedInt = 2.toUInt
-  val MU_RES_CHANGE: CUnsignedInt = 4.toUInt
-  
-  val MU_OPT_ALIGNCENTER: CUnsignedInt = 1.toUInt
-  val MU_OPT_ALIGNRIGHT: CUnsignedInt = 2.toUInt
-  val MU_OPT_NOINTERACT: CUnsignedInt = 4.toUInt
-  val MU_OPT_NOFRAME: CUnsignedInt = 8.toUInt
-  val MU_OPT_NORESIZE: CUnsignedInt = 16.toUInt
-  val MU_OPT_NOSCROLL: CUnsignedInt = 32.toUInt
-  val MU_OPT_NOCLOSE: CUnsignedInt = 64.toUInt
-  val MU_OPT_NOTITLE: CUnsignedInt = 128.toUInt
-  val MU_OPT_HOLDFOCUS: CUnsignedInt = 256.toUInt
-  val MU_OPT_AUTOSIZE: CUnsignedInt = 512.toUInt
-  val MU_OPT_POPUP: CUnsignedInt = 1024.toUInt
-  val MU_OPT_CLOSED: CUnsignedInt = 2048.toUInt
-  val MU_OPT_EXPANDED: CUnsignedInt = 4096.toUInt
-  
-  val MU_COMMAND_JUMP: CUnsignedInt = 1.toUInt
-  val MU_COMMAND_CLIP: CUnsignedInt = 2.toUInt
-  val MU_COMMAND_RECT: CUnsignedInt = 3.toUInt
-  val MU_COMMAND_TEXT: CUnsignedInt = 4.toUInt
-  val MU_COMMAND_ICON: CUnsignedInt = 5.toUInt
-  val MU_COMMAND_MAX: CUnsignedInt = 6.toUInt
-  
-  val MU_KEY_SHIFT: CUnsignedInt = 1.toUInt
-  val MU_KEY_CTRL: CUnsignedInt = 2.toUInt
-  val MU_KEY_ALT: CUnsignedInt = 4.toUInt
-  val MU_KEY_BACKSPACE: CUnsignedInt = 8.toUInt
-  val MU_KEY_RETURN: CUnsignedInt = 16.toUInt
-  
+object types:
+  export _root_.microuilib.structs.*
+  export _root_.microuilib.aliases.*
+  export _root_.microuilib.unions.*
